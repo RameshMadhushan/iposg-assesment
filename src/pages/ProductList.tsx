@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../features/products/productSlice";
 
-import { Stack, TextField, MenuItem, Typography, Slider, Button } from "@mui/material";
+import { Stack, TextField, /* MenuItem */ Typography, Slider, Button } from "@mui/material";
 import type { AppDispatch, RootState } from "../app/store";
 import { DataGrid, type GridPaginationModel } from "@mui/x-data-grid";
 import type { GridColDef } from "@mui/x-data-grid";
@@ -13,7 +13,7 @@ const ProductList = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("");
+  /* const [category, setCategory] = useState(""); */
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 10 });
 
@@ -27,7 +27,7 @@ const ProductList = () => {
   const fetchData = () => {
     dispatch(fetchProducts({
       search,
-      category,
+      /* category, */
       minPrice: priceRange[0],
       maxPrice: priceRange[1],
       page: paginationModel.page + 1,
@@ -35,7 +35,7 @@ const ProductList = () => {
     }));
   };
 
-  useEffect(() => { fetchData(); }, [search, category, priceRange, paginationModel.page, paginationModel.pageSize]);
+  useEffect(() => { fetchData(); }, [search, /* category */ priceRange, paginationModel.page, paginationModel.pageSize]);
 
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", flex: 1 },
