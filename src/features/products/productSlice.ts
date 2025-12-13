@@ -34,23 +34,45 @@ interface FetchProductsParams {
   limit?: number;
 }
 
+
+
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
   async (params: FetchProductsParams) => {
-    const query = new URLSearchParams();
+    let url = "";
+    const query: Record<string, string | number> = {}; 
 
-    if (params.search) query.append("q", params.search); // depends on your API
-    if (params.category) query.append("category", params.category);
-    if (params.minPrice !== undefined) query.append("price_gte", params.minPrice.toString());
-    if (params.maxPrice !== undefined) query.append("price_lte", params.maxPrice.toString());
-    if (params.page !== undefined) query.append("skip", (params.page * (params.limit || 10)).toString());
-    if (params.limit !== undefined) query.append("limit", params.limit.toString());
+    const limit = params.limit ?? 10;
+    const page = params.page ?? 1;
+    const skip = (page - 1) * limit;
 
-    const response = await axiosInstance.get(`/products?${query.toString()}`);
+    query.skip = skip;
+    query.limit = limit;
+
+    if (params.search) {
+      url = `/products/search`;
+      query.q = params.search;
+    } else {
+      url = `/products`;
+      if (params.category) query.category = params.category;
+      if (params.minPrice !== undefined) query.price_gte = params.minPrice;
+      if (params.maxPrice !== undefined) query.price_lte = params.maxPrice;
+    }
+
+    // Convert query object to query string manually
+    const queryString = Object.entries(query)
+      .map(([key, value]) => `${key}=${value}`)
+      .join("&");
+
+    const response = await axiosInstance.get(`${url}?${queryString}`);
 
     return { products: response.data.products, total: response.data.total };
   }
 );
+
+
+
+
 
 
 

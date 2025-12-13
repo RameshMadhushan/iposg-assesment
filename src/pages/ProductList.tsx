@@ -67,7 +67,7 @@ const ProductList = () => {
         <Button variant="contained" onClick={fetchData}>Filter</Button>
       </Stack>
 
-      <div style={{  width: "100%" }}>
+      <div style={{ height: '50vh',  width: "100%" }}>
         <DataGrid
           rows={products}
           columns={columns}
