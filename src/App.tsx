@@ -11,22 +11,36 @@ import Unauthorized from "./pages/Unauthorized";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import { useSelector } from "react-redux";
 import type { RootState } from "./app/store";
+import ProductList from "./pages/ProductList";
+import { drawerWidth } from "./components/Sidebar";
 
 const App = () => {
 
-    
-  const token = useSelector((state: RootState) => state.auth.token);
+        
+    const token = useSelector((state: RootState) => state.auth.token);
 
     return (
         <BrowserRouter>
 
             <ThemeToggle />
 
-            <Box display="flex">
+            <Box >
                 
-                {token && <Sidebar />}
+                {
+                    token && (
+                        <Box>
+                            <Sidebar />
+                        </Box>
+                    )
+                }
+                
 
-                <Box flex={1} p={3}>
+                <Box
+                    component="main"
+                    flex={1}
+                    p={3}
+                    ml={token ? `${drawerWidth}px` : 0} // offset content only if drawer is visible
+                >
 
                     <Routes>
                         
@@ -42,6 +56,17 @@ const App = () => {
                                 </ProtectedRoute>
                             }
                         />
+
+                        <Route
+                            path="/products-management"
+                            element={
+                                <ProtectedRoute allowedRoles={['admin', 'user']}>
+                                    <ProductList />
+                                </ProtectedRoute>
+                            }
+                        />
+
+
 
                         <Route
                             path="/user-management"

@@ -19,12 +19,12 @@ const uiSlice = createSlice({
     initialState,
     reducers: {
         toggleTheme(state) {
-        state.themeMode = state.themeMode === 'light' ? 'dark' : 'light';
-        localStorage.setItem('theme', state.themeMode);
+            state.themeMode = state.themeMode === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', state.themeMode);
         },
         setTheme(state, action: PayloadAction<ThemeMode>) {
-        state.themeMode = action.payload;
-        localStorage.setItem('theme', state.themeMode);
+            state.themeMode = action.payload;
+            localStorage.setItem('theme', state.themeMode);
         },
     },
 });
