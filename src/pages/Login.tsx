@@ -5,6 +5,7 @@ import { useForm, type SubmitHandler,  } from "react-hook-form";
 import { login } from "../features/auth/authSlice";
 import { mockUsers } from "../features/auth/mockUsers";
 import { TextField, Button, Stack, Typography, Dialog, DialogTitle, DialogContent, DialogActions, useTheme, Box, Divider } from "@mui/material";
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
 
 interface LoginFormInputs {
   username: string;
@@ -37,7 +38,7 @@ const Login = () => {
         }
 
         dispatch(login(user.role));
-        reset(); 
+        reset();         
         navigate("/");
     };
 
@@ -57,17 +58,23 @@ const Login = () => {
             }}
         >
 
+
+            <VpnKeyIcon 
+                fontSize="large"
+            />
+
             <Typography 
                 variant="h5"
             >
-                Welcome To IPOSG
+                Welcome to IPOSG!
             </Typography>
 
             <Typography
                 variant="body2"
+                textAlign="center"
             >
 
-                Please enter your username and password to log in.
+                Please enter your username and password to access your dashboard.
 
             </Typography>
 
@@ -83,7 +90,7 @@ const Login = () => {
                     {...register("username", { required: "Username is required" })}
                     error={!!errors.username}
                     helperText={errors.username?.message}
-                    margin="normal"
+                    margin="normal"                    
                 />
 
                 <TextField
@@ -107,13 +114,19 @@ const Login = () => {
 
 
 
+                <Divider sx={{ my: 4 }} />
+
+
                 <Box
-                    my={2}
+                    mt={2}                    
                 >
+
+
 
 
                     <Typography
                         variant="body2"
+                        mt={2}
                     >
                         Username: admin
                     </Typography>
@@ -124,18 +137,11 @@ const Login = () => {
                         Password: admin123
                     </Typography>
 
-                </Box>
 
-                <Divider />
-
-
-
-                <Box
-                    mt={2}
-                >
 
                     <Typography
                         variant="body2"
+                        mt={2}
                     >
                         Username: user
                     </Typography>

@@ -9,7 +9,16 @@ const ThemeToggle = () => {
     const mode = useSelector((state: any) => state.ui.themeMode);
 
     return (
-        <IconButton color="inherit" onClick={() => dispatch(toggleTheme())}>
+        <IconButton
+            color="inherit"
+            onClick={() => dispatch(toggleTheme())}
+            sx={{
+                position: 'fixed',
+                top: 16,     // distance from top
+                right: 16,   // distance from right
+                zIndex: 1000 // make sure it's above other content
+            }}
+        >
             {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
         </IconButton>
     );

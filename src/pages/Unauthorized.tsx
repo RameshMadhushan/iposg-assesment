@@ -1,12 +1,36 @@
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 const Unauthorized = () => {
     return  (
-        <>
-            <Typography variant="h4" color="error" mt={5} textAlign="center">
-                You are not authorized to view this page.
-            </Typography>;
-        </>
+
+        <Box
+            sx={{
+                p : 6,
+                borderRadius : 3,
+                backgroundColor : '#ff000020'
+            }}
+        >
+
+            <Typography 
+                variant="h4" 
+                align="center" 
+                color="error" 
+                gutterBottom
+            >
+                Unauthorized
+            </Typography>
+
+            <Typography 
+                variant="body1" 
+                align="center" 
+                gutterBottom
+                color='error'
+                fontWeight={500}
+            >
+                You do not have permission to access this page.
+            </Typography>
+
+        </Box>
     )
 };
 

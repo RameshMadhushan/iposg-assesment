@@ -11,7 +11,7 @@ interface UIState {
 const savedTheme = localStorage.getItem('theme') as ThemeMode | null;
 
 const initialState: UIState = {
-    themeMode: savedTheme ?? 'light',
+    themeMode: savedTheme ?? 'dark',
 };
 
 const uiSlice = createSlice({

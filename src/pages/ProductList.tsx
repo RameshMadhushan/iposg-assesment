@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories, fetchProducts } from "../features/products/productSlice";
 
-import { Stack, TextField, MenuItem, Typography, Slider,  } from "@mui/material";
+import { Stack, TextField, MenuItem, Typography, Slider, Box,  } from "@mui/material";
 import type { AppDispatch, RootState } from "../app/store";
 import { DataGrid, type GridPaginationModel } from "@mui/x-data-grid";
 import type { GridColDef } from "@mui/x-data-grid";
 import { selectCategories, selectProductsError, selectProductsLoading } from "../features/products/productSelectors";
+import { useNavigate } from "react-router-dom";
 
 const ProductList = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -21,10 +22,12 @@ const ProductList = () => {
   const total = useSelector((state: RootState) => state.products.total);
   const loading = useSelector(selectProductsLoading);
   const error = useSelector(selectProductsError);
-
+  const navigate = useNavigate();
   const categories = useSelector(selectCategories);
 
   const fetchData = () => {
+
+
     dispatch(fetchProducts({
       search,
       category,
@@ -56,20 +59,56 @@ const ProductList = () => {
   ];
 
   return (
-    <Stack spacing={2}>
-      <Typography variant="h5">Products</Typography>
+    <Stack >
+
+
+      <Typography 
+        variant="h5" 
+        gutterBottom
+        fontWeight={500}
+      >
+        Product Management
+      </Typography>
+
+      <Typography
+        mb={0.25}
+        fontWeight={500}
+      >
+        Manage your products efficiently,
+      </Typography>
+
+      <Typography
+        variant="body2"
+        mb={6}
+      >
+        Track inventory, and keep your catalog up to date.
+      </Typography>
+
+
 
       <Stack direction="row" spacing={2} flexWrap="wrap">
         <TextField label="Search" value={search} onChange={(e) => setSearch(e.target.value)} size="small"/>
 
-      <TextField
-        select
-        label="Category"
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        size="small"
-        sx={{ minWidth: 180 }}
-      >
+        <TextField
+          select
+          label="Category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          size="small"
+          sx={{ 
+            minWidth: 250 
+          }}
+          SelectProps={{
+            MenuProps: {
+              PaperProps: {
+                style: {
+                  maxHeight: 500,
+                },
+              },
+            },
+          }}
+        >
+
         <MenuItem value="">All</MenuItem>
         {categories.map((c) => (
           <MenuItem key={c} value={c}>
@@ -88,7 +127,11 @@ const ProductList = () => {
         
       </Stack>
 
-      <div style={{ height: '50vh',  width: "100%" }}>
+      <Box
+        sx={{
+          height : '70vh'
+        }}
+      >
         <DataGrid
           rows={products}
           columns={columns}
@@ -100,9 +143,12 @@ const ProductList = () => {
           loading={loading}
           disableColumnMenu
           disableColumnResize
-          getRowId={(row)=>row.id}
+          getRowId={(row)=>row.id}  
+          onRowClick={(params) => {
+            navigate(`/product/${params.id}`);
+          }}
         />
-      </div>
+      </Box>
 
       {error && <Typography color="error">{error}</Typography>}
     </Stack>

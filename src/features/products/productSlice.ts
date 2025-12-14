@@ -1,21 +1,28 @@
-// src/features/products/productSlice.ts
-import { createSlice, createAsyncThunk, type PayloadAction,  } from "@reduxjs/toolkit";
+
+import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "../../api/axiosInstance";
 
 export interface Product {
   id: string;
-  name: string;
+  title: string;
+  description?: string;
   category: string;
   price: number;
   stock: number;
+  rating?: number;
+  availabilityStatus?: string;
+  images?: string[];
 }
 
 interface ProductState {
   products: Product[];
-  total: number; 
+  total: number;
   loading: boolean;
   error: string | null;
   categories: string[];
+  selectedProduct: Product | null;
+  selectedLoading: boolean;
+  selectedError: string | null;
 }
 
 const initialState: ProductState = {
@@ -24,6 +31,9 @@ const initialState: ProductState = {
   loading: false,
   error: null,
   categories: [],
+  selectedProduct: null,
+  selectedLoading: false,
+  selectedError: null,
 };
 
 interface FetchProductsParams {
@@ -35,7 +45,7 @@ interface FetchProductsParams {
   limit?: number;
 }
 
-
+// Fetch product list
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
   async (params: FetchProductsParams) => {
@@ -48,30 +58,23 @@ export const fetchProducts = createAsyncThunk(
 
     query.limit = limit;
     query.skip = skip;
-    
+
     if (params.search) {
       url = `/products/search`;
       query.q = params.search;
-    }    
-    else if (params.category) {
+    } else if (params.category) {
       url = `/products/category/${params.category}`;
-    }    
-    else {
+    } else {
       url = `/products`;
     }
-    
+
     if (!params.search) {
       if (params.minPrice !== undefined) query.price_gte = params.minPrice;
       if (params.maxPrice !== undefined) query.price_lte = params.maxPrice;
     }
 
-    const queryString = new URLSearchParams(
-      query as Record<string, string>
-    ).toString();
-
-    const response = await axiosInstance.get(
-      queryString ? `${url}?${queryString}` : url
-    );
+    const queryString = new URLSearchParams(query as Record<string, string>).toString();
+    const response = await axiosInstance.get(queryString ? `${url}?${queryString}` : url);
 
     return {
       products: response.data.products,
@@ -80,8 +83,7 @@ export const fetchProducts = createAsyncThunk(
   }
 );
 
-
-
+// Fetch categories
 export const fetchCategories = createAsyncThunk(
   "products/fetchCategories",
   async () => {
@@ -90,22 +92,38 @@ export const fetchCategories = createAsyncThunk(
   }
 );
 
+// Fetch single product
+export const fetchProductById = createAsyncThunk(
+  "products/fetchProductById",
+  async (id: string) => {
+    const response = await axiosInstance.get(`/products/${id}`);
+    return response.data;
+  }
+);
 
-
-
-
+// Update product
+export const updateProduct = createAsyncThunk(
+  "products/updateProduct",
+  async (product: Product) => {
+    const response = await axiosInstance.post(`/products/add`, product, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return response.data;
+  }
+);
 
 const productSlice = createSlice({
   name: "products",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+    // ---- Products list ----
     builder
       .addCase(fetchProducts.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchProducts.fulfilled, (state, action: PayloadAction<{products: Product[], total: number}>) => {
+      .addCase(fetchProducts.fulfilled, (state, action: PayloadAction<{ products: Product[]; total: number }>) => {
         state.loading = false;
         state.products = action.payload.products;
         state.total = action.payload.total;
@@ -113,9 +131,46 @@ const productSlice = createSlice({
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch products";
-      })    
-      .addCase(fetchCategories.fulfilled, (state, action) => {
-        state.categories = action.payload;
+      });
+
+    // ---- Categories ----
+    builder.addCase(fetchCategories.fulfilled, (state, action: PayloadAction<string[]>) => {
+      state.categories = action.payload;
+    });
+
+    // ---- Single product ----
+    builder
+      .addCase(fetchProductById.pending, (state) => {
+        state.selectedLoading = true;
+        state.selectedError = null;
+        state.selectedProduct = null;
+      })
+      .addCase(fetchProductById.fulfilled, (state, action: PayloadAction<Product>) => {
+        state.selectedLoading = false;
+        state.selectedProduct = action.payload;
+      })
+      .addCase(fetchProductById.rejected, (state, action) => {
+        state.selectedLoading = false;
+        state.selectedError = action.error.message || "Failed to fetch product";
+      });
+
+    // ---- Update product ----
+    builder
+      .addCase(updateProduct.pending, (state) => {
+        state.selectedLoading = true;
+        state.selectedError = null;
+      })
+      .addCase(updateProduct.fulfilled, (state, action: PayloadAction<Product>) => {
+        state.selectedLoading = false;
+        state.selectedProduct = action.payload;
+
+        // Update in products list
+        const index = state.products.findIndex((p) => p.id === action.payload.id);
+        if (index !== -1) state.products[index] = action.payload;
+      })
+      .addCase(updateProduct.rejected, (state, action) => {
+        state.selectedLoading = false;
+        state.selectedError = action.error.message || "Failed to update product";
       });
   },
 });

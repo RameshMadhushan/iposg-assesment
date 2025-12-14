@@ -1,5 +1,5 @@
 
-import { Drawer, List, ListItem, ListItemText, Button, Box, Typography } from '@mui/material';
+import { Drawer, List, ListItem, ListItemText, Button, Box, Typography, useTheme } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { logout } from '../features/auth/authSlice';
@@ -15,6 +15,10 @@ const Sidebar = () => {
     const role = useSelector((state: RootState) => state.auth.role);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const theme = useTheme(); 
+    
+
+
 
     const handleLogout = () => {
         dispatch(logout());
@@ -63,6 +67,7 @@ const Sidebar = () => {
                     <ListItem  
                         component={Link} 
                         to="/"
+                        sx={{ color: theme.palette.text.primary }}
                     >
                         <ListItemText 
                             primary="Dashboard" 
@@ -73,6 +78,7 @@ const Sidebar = () => {
                     <ListItem  
                         component={Link} 
                         to="/products-management"
+                        sx={{ color: theme.palette.text.primary }}
                     >
                         <ListItemText 
                             primary="Product Management" 
@@ -82,6 +88,7 @@ const Sidebar = () => {
                     <ListItem  
                         component={Link} 
                         to="/order-management"
+                        sx={{ color: theme.palette.text.primary }}
                     >
                         <ListItemText 
                             primary="Order Management" 
@@ -94,6 +101,7 @@ const Sidebar = () => {
                             <ListItem  
                                 component={Link} 
                                 to="/user-management"
+                                sx={{ color: theme.palette.text.primary }}
                             >
                                 <ListItemText primary="User Management" />
                             </ListItem>
