@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Grid, Typography, CircularProgress } from '@mui/material';
 import type { AppDispatch, RootState } from '../app/store';

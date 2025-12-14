@@ -6,9 +6,16 @@ import { logout } from '../features/auth/authSlice';
 import { useNavigate, Link } from 'react-router-dom';
 import type { RootState } from '../app/store';
 
+interface SidebarProps {
+    variant?: "permanent" | "temporary"; 
+    open?: boolean; 
+    onClose?: () => void; 
+}
+
+
 export const drawerWidth = 275;
 
-const Sidebar = () => {
+const Sidebar: React.FC<SidebarProps> = ({ variant = "permanent", open = true, onClose }) => {
 
     
     const user = useSelector((state: RootState) => state.auth);
@@ -26,8 +33,7 @@ const Sidebar = () => {
     };
 
     return (
-        <Drawer 
-            variant="permanent" 
+        <Drawer             
             anchor="left"
             sx={{
                 width: drawerWidth,
@@ -40,7 +46,12 @@ const Sidebar = () => {
                     justifyContent: "space-between",
                     height: "100vh",
                 },
+                display: { xs: variant === "permanent" ? "none" : "block", md: "block" },
             }}            
+            variant={variant}
+            open={open}
+            onClose={onClose}
+
         >
 
             <Box>
@@ -68,6 +79,7 @@ const Sidebar = () => {
                         component={Link} 
                         to="/"
                         sx={{ color: theme.palette.text.primary }}
+                        onClick={onClose}
                     >
                         <ListItemText 
                             primary="Dashboard" 
@@ -79,6 +91,7 @@ const Sidebar = () => {
                         component={Link} 
                         to="/products-management"
                         sx={{ color: theme.palette.text.primary }}
+                        onClick={onClose}
                     >
                         <ListItemText 
                             primary="Product Management" 
@@ -89,6 +102,7 @@ const Sidebar = () => {
                         component={Link} 
                         to="/order-management"
                         sx={{ color: theme.palette.text.primary }}
+                        onClick={onClose}
                     >
                         <ListItemText 
                             primary="Order Management" 
@@ -102,6 +116,7 @@ const Sidebar = () => {
                                 component={Link} 
                                 to="/user-management"
                                 sx={{ color: theme.palette.text.primary }}
+                                onClick={onClose}
                             >
                                 <ListItemText primary="User Management" />
                             </ListItem>
