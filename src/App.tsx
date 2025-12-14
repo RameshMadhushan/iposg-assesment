@@ -1,6 +1,6 @@
 // src/App.tsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Box } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
 import ThemeToggle from "./components/ThemeToggle";
 import Sidebar from "./components/Sidebar";
 import { ToastContainer } from "react-toastify";
@@ -21,6 +21,8 @@ const App = () => {
 
         
     const token = useSelector((state: RootState) => state.auth.token);
+    const theme = useTheme();
+
 
     return (
 
@@ -126,6 +128,7 @@ const App = () => {
                 newestOnTop
                 closeOnClick
                 pauseOnHover
+                theme={theme.palette.mode === "dark" ? "dark" : "light"}
             />
 
         </>
