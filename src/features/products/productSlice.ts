@@ -12,9 +12,10 @@ export interface Product {
 
 interface ProductState {
   products: Product[];
-  total: number; // total products for pagination
+  total: number; 
   loading: boolean;
   error: string | null;
+  categories: string[];
 }
 
 const initialState: ProductState = {
@@ -22,9 +23,9 @@ const initialState: ProductState = {
   total: 0,
   loading: false,
   error: null,
+  categories: [],
 };
 
-// Async thunk with query params for server-side filtering
 interface FetchProductsParams {
   search?: string;
   category?: string;
@@ -35,42 +36,59 @@ interface FetchProductsParams {
 }
 
 
-
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
   async (params: FetchProductsParams) => {
     let url = "";
-    const query: Record<string, string | number> = {}; 
+    const query: Record<string, string | number> = {};
 
     const limit = params.limit ?? 10;
     const page = params.page ?? 1;
     const skip = (page - 1) * limit;
 
-    query.skip = skip;
     query.limit = limit;
-
+    query.skip = skip;
+    
     if (params.search) {
       url = `/products/search`;
       query.q = params.search;
-    } else {
+    }    
+    else if (params.category) {
+      url = `/products/category/${params.category}`;
+    }    
+    else {
       url = `/products`;
-      if (params.category) query.category = params.category;
+    }
+    
+    if (!params.search) {
       if (params.minPrice !== undefined) query.price_gte = params.minPrice;
       if (params.maxPrice !== undefined) query.price_lte = params.maxPrice;
     }
 
-    // Convert query object to query string manually
-    const queryString = Object.entries(query)
-      .map(([key, value]) => `${key}=${value}`)
-      .join("&");
+    const queryString = new URLSearchParams(
+      query as Record<string, string>
+    ).toString();
 
-    const response = await axiosInstance.get(`${url}?${queryString}`);
+    const response = await axiosInstance.get(
+      queryString ? `${url}?${queryString}` : url
+    );
 
-    return { products: response.data.products, total: response.data.total };
+    return {
+      products: response.data.products,
+      total: response.data.total,
+    };
   }
 );
 
 
+
+export const fetchCategories = createAsyncThunk(
+  "products/fetchCategories",
+  async () => {
+    const response = await axiosInstance.get<string[]>("/products/category-list");
+    return response.data;
+  }
+);
 
 
 
@@ -95,6 +113,9 @@ const productSlice = createSlice({
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to fetch products";
+      })    
+      .addCase(fetchCategories.fulfilled, (state, action) => {
+        state.categories = action.payload;
       });
   },
 });

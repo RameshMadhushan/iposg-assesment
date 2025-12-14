@@ -79,6 +79,14 @@ const Sidebar = () => {
                         />
                     </ListItem>
 
+                    <ListItem  
+                        component={Link} 
+                        to="/order-management"
+                    >
+                        <ListItemText 
+                            primary="Order Management" 
+                        />
+                    </ListItem>
 
 
                     {

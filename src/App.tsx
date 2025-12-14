@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "./app/store";
 import ProductList from "./pages/ProductList";
 import { drawerWidth } from "./components/Sidebar";
+import OrderList from "./pages/OrderList";
 
 const App = () => {
 
@@ -62,6 +63,16 @@ const App = () => {
                             element={
                                 <ProtectedRoute allowedRoles={['admin', 'user']}>
                                     <ProductList />
+                                </ProtectedRoute>
+                            }
+                        />
+
+
+                        <Route
+                            path="/order-management"
+                            element={
+                                <ProtectedRoute allowedRoles={["admin", "user"]}>
+                                    <OrderList />
                                 </ProtectedRoute>
                             }
                         />
