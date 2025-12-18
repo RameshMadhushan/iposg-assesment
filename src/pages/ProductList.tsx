@@ -3,12 +3,13 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories, fetchProducts } from "../features/products/productSlice";
 
-import { Stack, TextField, MenuItem, Typography, Slider, Box,  } from "@mui/material";
+import { Stack, TextField, MenuItem, Typography, Slider, Box, Button,  } from "@mui/material";
 import type { AppDispatch, RootState } from "../app/store";
 import { DataGrid, type GridPaginationModel } from "@mui/x-data-grid";
 import type { GridColDef } from "@mui/x-data-grid";
 import { selectCategories, selectProductsError, selectProductsLoading } from "../features/products/productSelectors";
 import { useNavigate } from "react-router-dom";
+import AddNewProductPopup from "../components/AddNewProductPopup";
 
 const ProductList = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -24,13 +25,14 @@ const ProductList = () => {
   const error = useSelector(selectProductsError);
   const navigate = useNavigate();
   const categories = useSelector(selectCategories);
+  const [openAddnewPopup, setOpenAddnewPopup] = useState<boolean>(false)
 
   const fetchData = () => {
 
 
     dispatch(fetchProducts({
       search,
-      category,
+      category : 'groceries',
       minPrice: priceRange[0],
       maxPrice: priceRange[1],
       page: paginationModel.page + 1,
@@ -124,6 +126,20 @@ const ProductList = () => {
           <Typography variant="caption">Price: ${priceRange[0]} - ${priceRange[1]}</Typography>
           <Slider value={priceRange} onChange={(_, v) => setPriceRange(v as [number, number])} valueLabelDisplay="auto" min={0} max={1000}/>
         </Stack>
+
+
+
+        <Stack>
+          <Button
+            onClick={() => setOpenAddnewPopup(true)}
+            variant="contained"                    
+          >
+            Add  New Product
+
+          </Button>
+
+        </Stack>
+
         
       </Stack>
 
@@ -151,6 +167,18 @@ const ProductList = () => {
       </Box>
 
       {error && <Typography color="error">{error}</Typography>}
+
+
+      {/* popups */} 
+
+      <AddNewProductPopup  
+        open={openAddnewPopup}
+        onClose={() => setOpenAddnewPopup(false)}
+        onSuccess={() => {
+          setOpenAddnewPopup(false);          
+        }}        
+      />
+
     </Stack>
   );
 };
